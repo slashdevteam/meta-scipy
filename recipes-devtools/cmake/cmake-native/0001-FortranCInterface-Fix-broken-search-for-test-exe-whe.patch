@@ -1,37 +1,33 @@
-From 0fc7b9df1c3b6515395bf646deffb25e91cb415b Mon Sep 17 00:00:00 2001
-From: Brad King <brad.king@kitware.com>
-Date: Thu, 27 Feb 2020 11:04:20 -0500
-Subject: [PATCH] FortranCInterface: Fix broken search for test exe when
- cross-compiling
-
-Previously the `find_program` call we used to locate the test executable
-but that can be broken by `CMAKE_FIND_ROOT_PATH_MODE_PROGRAM`.  Instead
-teach the test project to write a file with the location of the
-executable it builds.  Load that file to get the exact location.
-
-Fixes: #20390
----
- Modules/FortranCInterface/CMakeLists.txt |  4 ++++
- Modules/FortranCInterface/Detect.cmake   | 10 ++--------
- 2 files changed, 6 insertions(+), 8 deletions(-)
-
-diff --git a/Modules/FortranCInterface/CMakeLists.txt b/Modules/FortranCInterface/CMakeLists.txt
-index e3b81d7..71bd3ad 100644
---- a/Modules/FortranCInterface/CMakeLists.txt
-+++ b/Modules/FortranCInterface/CMakeLists.txt
-@@ -102,3 +102,7 @@ set_property(TARGET symbols PROPERTY POSITION_INDEPENDENT_CODE 1)
+diff --color -ur a/Modules/FortranCInterface/CMakeLists.txt b/Modules/FortranCInterface/CMakeLists.txt
+--- a/Modules/FortranCInterface/CMakeLists.txt	2020-10-15 06:53:04.182950336 +0200
++++ b/Modules/FortranCInterface/CMakeLists.txt	2020-10-15 06:52:35.444931287 +0200
+@@ -101,3 +101,7 @@
  # Require symbols through Fortran.
  add_executable(FortranCInterface main.F call_sub.f ${call_mod})
- target_link_libraries(FortranCInterface PUBLIC symbols)
+ target_link_libraries(FortranCInterface symbols)
 +
 +file(GENERATE OUTPUT exe-$<CONFIG>.cmake CONTENT [[
 +set(FortranCInterface_EXE "$<TARGET_FILE:FortranCInterface>")
 +]])
-diff --git a/Modules/FortranCInterface/Detect.cmake b/Modules/FortranCInterface/Detect.cmake
-index 7789785..1431dd8 100644
---- a/Modules/FortranCInterface/Detect.cmake
-+++ b/Modules/FortranCInterface/Detect.cmake
-@@ -43,17 +43,11 @@ set(FortranCInterface_COMPILED ${FortranCInterface_COMPILED})
+diff --color -ur a/Modules/FortranCInterface/Detect.cmake b/Modules/FortranCInterface/Detect.cmake
+--- a/Modules/FortranCInterface/Detect.cmake	2020-10-15 06:53:04.187950339 +0200
++++ b/Modules/FortranCInterface/Detect.cmake	2020-10-15 07:09:07.000000000 +0200
+@@ -27,6 +27,7 @@
+ set(_result)
+ 
+ # Build a sample project which reports symbols.
++set(CMAKE_TRY_COMPILE_CONFIGURATION Release)
+ try_compile(FortranCInterface_COMPILED
+   ${FortranCInterface_BINARY_DIR}
+   ${FortranCInterface_SOURCE_DIR}
+@@ -35,22 +36,18 @@
+   CMAKE_FLAGS
+     "-DCMAKE_C_FLAGS:STRING=${CMAKE_C_FLAGS}"
+     "-DCMAKE_Fortran_FLAGS:STRING=${CMAKE_Fortran_FLAGS}"
++    "-DCMAKE_C_FLAGS_RELEASE:STRING=${CMAKE_C_FLAGS_RELEASE}"
++    "-DCMAKE_Fortran_FLAGS_RELEASE:STRING=${CMAKE_Fortran_FLAGS_RELEASE}"
+   OUTPUT_VARIABLE FortranCInterface_OUTPUT)
+ set(FortranCInterface_COMPILED ${FortranCInterface_COMPILED})
  unset(FortranCInterface_COMPILED CACHE)
  
  # Locate the sample project executable.
@@ -39,7 +35,7 @@ index 7789785..1431dd8 100644
  if(FortranCInterface_COMPILED)
 -  find_program(FortranCInterface_EXE
 -    NAMES FortranCInterface${CMAKE_EXECUTABLE_SUFFIX}
--    PATHS ${FortranCInterface_BINARY_DIR} ${FortranCInterface_BINARY_DIR}/Release
+-    PATHS ${FortranCInterface_BINARY_DIR} ${FortranCInterface_BINARY_DIR}/Debug
 -    NO_DEFAULT_PATH
 -    )
 -  set(FortranCInterface_EXE ${FortranCInterface_EXE})
