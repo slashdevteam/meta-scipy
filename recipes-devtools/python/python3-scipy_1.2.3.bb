@@ -1,14 +1,14 @@
 SUMMARY = "SciPy: Scientific Library for Python"
 HOMEPAGE = "https://www.scipy.org"
 LICENSE = "BSD"
-LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=eb7262aea2504e4c0dfd16f5079e14dd"
+LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=be4a7946a904c1b639bcfe4da4f795b8"
 
-SRC_URI = "https://files.pythonhosted.org/packages/a7/5c/495190b8c7cc71977c3d3fafe788d99d43eeb4740ac56856095df6a23fbd/scipy-1.3.3.tar.gz \
+SRC_URI = "https://files.pythonhosted.org/packages/62/4f/7e95c5000c411164d5ca6f55ac54cda5d200a3b6719dafd215ee0bd61578/scipy-1.2.3.tar.gz \
            file://0001-Allow-passing-flags-via-FARCH-for-mach.patch \
            "
 
-SRC_URI[md5sum] = "b265efea6ce2f2c1e580cc66bfb8b117"
-SRC_URI[sha256sum] = "64bf4e8ae0db2d42b58477817f648d81e77f0b381d0ea4427385bba3f959380a"
+SRC_URI[md5sum] = "43b42a507472dfa1dff4c91d58a6543f"
+SRC_URI[sha256sum] = "ecbe6413ca90b8e19f8475bfa303ac001e81b04ec600d17fa7f816271f7cca57"
 
 S = "${WORKDIR}/scipy-${PV}"
 
