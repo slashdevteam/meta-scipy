@@ -1,24 +1,7 @@
-From cf25bb74f5426cda8d195a5a7f4324853a630b86 Mon Sep 17 00:00:00 2001
-From: Erik Botö <erik.boto@gmail.com>
-Date: Fri, 17 Apr 2020 09:18:58 +0200
-Subject: [PATCH] Allow passing flags via FARCH for mach
-
-Enable passing options via FARCH, so that the flags for setting the
-correct floating point ABI is propagated properly to the fortran
-compiler.
-
-This fixes an issue were the mach lib would otherwise be built as
-soft-float, even though the target arch is hard-float.
----
- scipy/integrate/setup.py | 3 +--
- scipy/special/setup.py   | 3 +--
- 2 files changed, 2 insertions(+), 4 deletions(-)
-
-diff --git a/scipy/integrate/setup.py b/scipy/integrate/setup.py
-index b0b530b..859bcb6 100644
---- a/scipy/integrate/setup.py
-+++ b/scipy/integrate/setup.py
-@@ -30,8 +30,7 @@ def configuration(parent_package='',top_path=None):
+diff --color -ur a/scipy/integrate/setup.py b/scipy/integrate/setup.py
+--- a/scipy/integrate/setup.py	2019-07-18 01:15:44.000000000 +0200
++++ b/scipy/integrate/setup.py	2020-10-16 07:56:48.150288830 +0200
+@@ -30,8 +30,7 @@
      quadpack_test_src = [join('tests','_test_multivariate.c')]
      odeint_banded_test_src = [join('tests', 'banded5x5.f')]
  
@@ -28,11 +11,10 @@ index b0b530b..859bcb6 100644
      config.add_library('quadpack', sources=quadpack_src)
      config.add_library('lsoda', sources=lsoda_src)
      config.add_library('vode', sources=vode_src)
-diff --git a/scipy/special/setup.py b/scipy/special/setup.py
-index b4b9d0c..e6b3bb3 100644
---- a/scipy/special/setup.py
-+++ b/scipy/special/setup.py
-@@ -55,8 +55,7 @@ def configuration(parent_package='',top_path=None):
+diff --color -ur a/scipy/special/setup.py b/scipy/special/setup.py
+--- a/scipy/special/setup.py	2020-01-20 21:44:32.000000000 +0100
++++ b/scipy/special/setup.py	2020-10-16 07:55:35.333251058 +0200
+@@ -55,8 +55,7 @@
      amos_src = [join('amos','*.f')]
      cdf_src = [join('cdflib','*.f')]
      specfun_src = [join('specfun','*.f')]
@@ -42,3 +24,12 @@ index b4b9d0c..e6b3bb3 100644
      config.add_library('sc_amos',sources=amos_src)
      config.add_library('sc_cdf',sources=cdf_src)
      config.add_library('sc_specfun',sources=specfun_src)
+@@ -107,7 +106,7 @@
+ 
+     # Cython API
+     config.add_data_files('cython_special.pxd')
+-    
++
+     cython_special_src = ['cython_special.c', 'sf_error.c', '_logit.c.src',
+                           "amos_wrappers.c", "cdf_wrappers.c", "specfun_wrappers.c"]
+     cython_special_dep = (headers + ufuncs_src + ufuncs_cxx_src + amos_src
